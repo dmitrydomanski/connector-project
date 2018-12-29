@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
 import TextFieldGroup from '../../common/TextFieldGroup';
 import TextAreaFieldGroup from '../../common/TextAreaFieldGroup';
 import SelectListGroup from '../../common/SelectListGroup';
@@ -9,7 +10,6 @@ import InputGroup from '../../common/InputGroup';
 import { createProfile, getCurrentProfile } from '../../../actions/profileActions';
 import isEmpty from '../../../validation/is-empty';
 
-/* eslint react/destructuring-assignment: */
 class EditProfile extends Component {
     constructor(props) {
         super(props);
@@ -34,7 +34,18 @@ class EditProfile extends Component {
     }
 
     componentDidMount() {
-        this.props.getCurrentProfile();
+        // this.props.getCurrentProfile();
+        this.onGetCurrentProfile();
+    }
+
+    onCreateProfile = (profileData, history) => {
+        const { onCreateProfile } = this.props;
+        onCreateProfile(profileData, history);
+    }
+
+    onGetCurrentProfile = () => {
+        const { onGetCurrentProfile } = this.props;
+        onGetCurrentProfile();
     }
 
     onSubmit = (e) => {
@@ -63,7 +74,7 @@ class EditProfile extends Component {
             social,
         };
 
-        this.props.createProfile(profileData, history);
+        this.onCreateProfile(profileData, history);
     }
 
     static getDerivedStateFromProps(props) {
@@ -129,10 +140,12 @@ class EditProfile extends Component {
     }
 
     onChange = (e) => {
+        // console.log(e.target.value);
         const { name, value } = e.target;
         this.setState({
             [name]: value,
         });
+        // console.log(this.state[name]);
     }
 
     render() {
@@ -341,13 +354,20 @@ const mapStateToProps = state => ({
     err: state.err,
 });
 
-EditProfile.propTypes = {
-    history: PropTypes.instanceOf(Object).isRequired,
-    createProfile: PropTypes.func.isRequired,
-    getCurrentProfile: PropTypes.func.isRequired,
+const mapActionsToProps = (dispatch, props) => {
+    console.log(props);
+    return bindActionCreators({
+        onCreateProfile: createProfile,
+        onGetCurrentProfile: getCurrentProfile,
+    }, dispatch);
 };
 
-export default connect(mapStateToProps, {
-    createProfile,
-    getCurrentProfile,
-})(withRouter(EditProfile));
+EditProfile.propTypes = {
+    history: PropTypes.instanceOf(Object).isRequired,
+    // createProfile: PropTypes.func.isRequired,
+    // getCurrentProfile: PropTypes.func.isRequired,
+    onCreateProfile: PropTypes.func.isRequired,
+    onGetCurrentProfile: PropTypes.func.isRequired,
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(withRouter(EditProfile));
