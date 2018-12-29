@@ -34,8 +34,68 @@ class EditProfile extends Component {
     }
 
     componentDidMount() {
-        // this.props.getCurrentProfile();
         this.onGetCurrentProfile();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.err) {
+            this.setState({
+                errors: nextProps.err,
+            });
+        }
+
+        if (nextProps.profile.profile) {
+            const { profile } = nextProps.profile;
+            let {
+                company, website, location, githubusername, bio,
+                twitter, facebook, linkedin, youtube, instagram, social,
+            } = profile;
+
+            const { handle, skills, status } = profile;
+
+            const skillsCSV = skills.join(',');
+
+            company = !isEmpty(company) ? company : '';
+            website = !isEmpty(website) ? website : '';
+            location = !isEmpty(location) ? location : '';
+            githubusername = !isEmpty(githubusername)
+                ? githubusername
+                : '';
+            bio = !isEmpty(bio) ? bio : '';
+            social = !isEmpty(social) ? social : {
+            };
+            twitter = !isEmpty(social.twitter)
+                ? social.twitter
+                : '';
+            facebook = !isEmpty(social.facebook)
+                ? social.facebook
+                : '';
+            linkedin = !isEmpty(social.linkedin)
+                ? social.linkedin
+                : '';
+            youtube = !isEmpty(social.youtube)
+                ? social.youtube
+                : '';
+            instagram = !isEmpty(social.instagram)
+                ? social.instagram
+                : '';
+
+            this.setState({
+                handle,
+                company,
+                website,
+                location,
+                status,
+                skills: skillsCSV,
+                githubusername,
+                bio,
+                twitter,
+                facebook,
+                linkedin,
+                youtube,
+                instagram,
+            });
+        }
     }
 
     onCreateProfile = (profileData, history) => {
@@ -77,75 +137,11 @@ class EditProfile extends Component {
         this.onCreateProfile(profileData, history);
     }
 
-    static getDerivedStateFromProps(props) {
-        const { profile, err } = props;
-        if (!isEmpty(err)) {
-            return {
-                errors: err,
-            };
-        }
-
-        if (profile.profile) {
-            let {
-                company, website, location, githubusername, bio,
-                twitter, facebook, linkedin, youtube, instagram, social,
-            } = profile.profile;
-
-            const { handle, skills, status } = profile.profile;
-
-            const skillsCSV = skills.join(',');
-
-            company = !isEmpty(company) ? company : '';
-            website = !isEmpty(website) ? website : '';
-            location = !isEmpty(location) ? location : '';
-            githubusername = !isEmpty(githubusername)
-                ? githubusername
-                : '';
-            bio = !isEmpty(bio) ? bio : '';
-            social = !isEmpty(social) ? social : {
-            };
-            twitter = !isEmpty(social.twitter)
-                ? social.twitter
-                : '';
-            facebook = !isEmpty(social.facebook)
-                ? social.facebook
-                : '';
-            linkedin = !isEmpty(social.linkedin)
-                ? social.linkedin
-                : '';
-            youtube = !isEmpty(social.youtube)
-                ? social.youtube
-                : '';
-            instagram = !isEmpty(social.instagram)
-                ? social.instagram
-                : '';
-
-            return {
-                handle,
-                company,
-                website,
-                location,
-                status,
-                skills: skillsCSV,
-                githubusername,
-                bio,
-                twitter,
-                facebook,
-                linkedin,
-                youtube,
-                instagram,
-            };
-        }
-        return null;
-    }
-
     onChange = (e) => {
-        // console.log(e.target.value);
         const { name, value } = e.target;
         this.setState({
             [name]: value,
         });
-        // console.log(this.state[name]);
     }
 
     render() {
@@ -354,20 +350,17 @@ const mapStateToProps = state => ({
     err: state.err,
 });
 
-const mapActionsToProps = (dispatch, props) => {
-    console.log(props);
-    return bindActionCreators({
-        onCreateProfile: createProfile,
-        onGetCurrentProfile: getCurrentProfile,
-    }, dispatch);
-};
+const mapActionsToProps = dispatch => bindActionCreators({
+    onCreateProfile: createProfile,
+    onGetCurrentProfile: getCurrentProfile,
+}, dispatch);
 
 EditProfile.propTypes = {
     history: PropTypes.instanceOf(Object).isRequired,
-    // createProfile: PropTypes.func.isRequired,
-    // getCurrentProfile: PropTypes.func.isRequired,
     onCreateProfile: PropTypes.func.isRequired,
     onGetCurrentProfile: PropTypes.func.isRequired,
+    profile: PropTypes.instanceOf(Object).isRequired,
+    err: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(withRouter(EditProfile));
