@@ -26,12 +26,14 @@ class AddEducation extends Component {
     /* eslint react/destructuring-assignment: */
     /* eslint jsx-a11y/label-has-associated-control: */
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.err) {
-            this.setState({
-                errors: nextProps.err,
-            });
+    static getDerivedStateFromProps(props) {
+        const { err } = props;
+        if (err) {
+            return {
+                errors: err,
+            };
         }
+        return null;
     }
 
     onChange = (e) => {
@@ -161,8 +163,6 @@ class AddEducation extends Component {
 }
 
 AddEducation.propTypes = {
-    // profile: PropTypes.instanceOf(Object).isRequired,
-    err: PropTypes.instanceOf(Object).isRequired,
     history: PropTypes.instanceOf(Object).isRequired,
     addEducation: PropTypes.func.isRequired,
 };

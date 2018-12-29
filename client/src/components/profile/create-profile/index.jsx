@@ -31,12 +31,14 @@ class CreateProfile extends Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.err) {
-            this.setState({
-                errors: nextProps.err,
-            });
+    static getDerivedStateFromProps(props) {
+        const { err } = props;
+        if (err) {
+            return {
+                errors: err,
+            };
         }
+        return null;
     }
 
     onSubmit = (e) => {
@@ -278,7 +280,7 @@ const mapStateToProps = state => ({
 });
 
 CreateProfile.propTypes = {
-    err: PropTypes.instanceOf(Object).isRequired,
+    // err: PropTypes.instanceOf(Object).isRequired,
     history: PropTypes.instanceOf(Object).isRequired,
     createProfile: PropTypes.func.isRequired,
 };

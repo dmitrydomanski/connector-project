@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loginUser } from '../../../actions/authActions';
 import TextFieldGroup from '../../common/TextFieldGroup';
+import isEmpty from '../../../validation/is-empty';
 
 class Login extends Component {
     constructor() {
@@ -22,16 +23,17 @@ class Login extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        const { history } = this.props;
-        if (nextProps.auth.isAuthenticated) {
+    static getDerivedStateFromProps(props) {
+        const { auth, err, history } = props;
+        if (auth.isAuthenticated) {
             history.push('/dashboard');
         }
-        if (nextProps.err) {
-            this.setState({
-                errors: nextProps.err,
-            });
+        if (!isEmpty(err)) {
+            return {
+                errors: err,
+            };
         }
+        return null;
     }
 
     onChange = (e) => {
@@ -100,7 +102,7 @@ const mapStateToProps = state => ({
 
 Login.propTypes = {
     loginUser: PropTypes.func.isRequired,
-    err: PropTypes.instanceOf(Object).isRequired,
+    // err: PropTypes.instanceOf(Object).isRequired,
     history: PropTypes.instanceOf(Object).isRequired,
     auth: PropTypes.instanceOf(Object).isRequired,
 };

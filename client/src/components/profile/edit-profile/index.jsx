@@ -37,21 +37,50 @@ class EditProfile extends Component {
         this.props.getCurrentProfile();
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.err) {
-            this.setState({
-                errors: nextProps.err,
-            });
+    onSubmit = (e) => {
+        const {
+            displaySocialInputs, handle, company, website, location,
+            status, skills, githubusername, bio, twitter, facebook, linkedin,
+            youtube, instagram, social,
+        } = this.state;
+        const { history } = this.props;
+        e.preventDefault();
+        const profileData = {
+            displaySocialInputs,
+            handle,
+            company,
+            website,
+            location,
+            status,
+            skills,
+            githubusername,
+            bio,
+            twitter,
+            facebook,
+            linkedin,
+            youtube,
+            instagram,
+            social,
+        };
+
+        this.props.createProfile(profileData, history);
+    }
+
+    static getDerivedStateFromProps(props) {
+        const { profile, err } = props;
+        if (!isEmpty(err)) {
+            return {
+                errors: err,
+            };
         }
 
-        if (nextProps.profile.profile) {
-            const { profile } = nextProps.profile;
+        if (profile.profile) {
             let {
                 company, website, location, githubusername, bio,
                 twitter, facebook, linkedin, youtube, instagram, social,
-            } = profile;
+            } = profile.profile;
 
-            const { handle, skills, status } = profile;
+            const { handle, skills, status } = profile.profile;
 
             const skillsCSV = skills.join(',');
 
@@ -80,7 +109,7 @@ class EditProfile extends Component {
                 ? social.instagram
                 : '';
 
-            this.setState({
+            return {
                 handle,
                 company,
                 website,
@@ -94,37 +123,9 @@ class EditProfile extends Component {
                 linkedin,
                 youtube,
                 instagram,
-            });
+            };
         }
-    }
-
-    onSubmit = (e) => {
-        const {
-            displaySocialInputs, handle, company, website, location,
-            status, skills, githubusername, bio, twitter, facebook, linkedin,
-            youtube, instagram, social,
-        } = this.state;
-        const { history } = this.props;
-        e.preventDefault();
-        const profileData = {
-            displaySocialInputs,
-            handle,
-            company,
-            website,
-            location,
-            status,
-            skills,
-            githubusername,
-            bio,
-            twitter,
-            facebook,
-            linkedin,
-            youtube,
-            instagram,
-            social,
-        };
-
-        this.props.createProfile(profileData, history);
+        return null;
     }
 
     onChange = (e) => {
@@ -341,11 +342,9 @@ const mapStateToProps = state => ({
 });
 
 EditProfile.propTypes = {
-    err: PropTypes.instanceOf(Object).isRequired,
     history: PropTypes.instanceOf(Object).isRequired,
     createProfile: PropTypes.func.isRequired,
     getCurrentProfile: PropTypes.func.isRequired,
-    profile: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default connect(mapStateToProps, {

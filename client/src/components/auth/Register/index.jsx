@@ -26,12 +26,14 @@ class Register extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.err) {
-            this.setState({
-                errors: nextProps.err,
-            });
+    static getDerivedStateFromProps(props) {
+        const { err } = props;
+        if (err) {
+            return {
+                errors: err,
+            };
         }
+        return null;
     }
 
     onChange = (e) => {
@@ -128,7 +130,6 @@ export default connect(mapStateToProps, {
 
 Register.propTypes = {
     registerUser: PropTypes.func.isRequired,
-    err: PropTypes.instanceOf(Object).isRequired,
     history: PropTypes.instanceOf(Object).isRequired,
     auth: PropTypes.instanceOf(Object).isRequired,
 };

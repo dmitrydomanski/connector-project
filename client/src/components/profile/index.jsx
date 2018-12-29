@@ -11,6 +11,12 @@ import { getProfileByHandle } from '../../actions/profileActions';
 
 /* eslint react/destructuring-assignment: */
 class Profile extends Component {
+    constructor() {
+        super();
+        this.state = {
+        };
+    }
+
     componentDidMount() {
         const { match } = this.props;
         if (match.params.handle) {
@@ -18,12 +24,12 @@ class Profile extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        const { history } = this.props;
-        const { loading } = this.props.profile;
-        if (nextProps.profile === null && loading) {
+    static getDerivedStateFromProps(props) {
+        const { profile, history } = props;
+        if (profile === null && profile.loading) {
             history.push('/not-found');
         }
+        return null;
     }
 
     render() {
@@ -74,7 +80,7 @@ const mapStateToProps = state => ({
 Profile.propTypes = {
     profile: PropTypes.instanceOf(Object).isRequired,
     match: PropTypes.instanceOf(Object).isRequired,
-    history: PropTypes.instanceOf(Object).isRequired,
+    // history: PropTypes.instanceOf(Object).isRequired,
     getProfileByHandle: PropTypes.func.isRequired,
 };
 
