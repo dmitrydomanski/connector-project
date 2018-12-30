@@ -2,17 +2,23 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Moment from 'react-moment';
+import { bindActionCreators } from 'redux';
 import { deleteExperience } from '../../../actions/profileActions';
 
-/* eslint react/destructuring-assignment: */
 /* eslint no-underscore-dangle: */
 class Experience extends Component {
     onDeleteClick = id => () => {
-        this.props.deleteExperience(id);
+        this.onDeleteExperience(id);
+    }
+
+    onDeleteExperience = (id) => {
+        const { onDeleteExperience } = this.props;
+        onDeleteExperience(id);
     }
 
     render() {
-        const experience = this.props.experience.map(exp => (
+        const { experience } = this.props;
+        const experienceList = experience.map(exp => (
             <tr key={exp._id}>
                 <td>{exp.company}</td>
                 <td>{exp.title}</td>
@@ -45,7 +51,7 @@ class Experience extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {experience}
+                        {experienceList}
                     </tbody>
                 </table>
             </div>
@@ -53,11 +59,13 @@ class Experience extends Component {
     }
 }
 
+const mapActionsToProps = dispatch => bindActionCreators({
+    onDeleteExperience: deleteExperience,
+}, dispatch);
+
 Experience.propTypes = {
-    deleteExperience: PropTypes.func.isRequired,
+    onDeleteExperience: PropTypes.func.isRequired,
     experience: PropTypes.instanceOf(Object).isRequired,
 };
 
-export default connect(null, {
-    deleteExperience,
-})(Experience);
+export default connect(null, mapActionsToProps)(Experience);

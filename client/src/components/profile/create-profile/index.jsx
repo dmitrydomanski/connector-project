@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
 import TextFieldGroup from '../../common/TextFieldGroup';
 import TextAreaFieldGroup from '../../common/TextAreaFieldGroup';
 import SelectListGroup from '../../common/SelectListGroup';
@@ -31,14 +32,17 @@ class CreateProfile extends Component {
         };
     }
 
-    static getDerivedStateFromProps(props) {
-        const { err } = props;
-        if (err) {
-            return {
-                errors: err,
-            };
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.err) {
+            this.setState({
+                errors: nextProps.err,
+            });
         }
-        return null;
+    }
+
+    onCreateProfile = (profileData, history) => {
+        const { onCreateProfile } = this.props;
+        onCreateProfile(profileData, history);
     }
 
     onSubmit = (e) => {
@@ -65,9 +69,7 @@ class CreateProfile extends Component {
             youtube,
             instagram,
         };
-
-        /* eslint react/destructuring-assignment: */
-        this.props.createProfile(profileData, history);
+        this.onCreateProfile(profileData, history);
     }
 
     onChange = (e) => {
@@ -80,7 +82,8 @@ class CreateProfile extends Component {
     render() {
         const {
             handle, errors, status, company, website, location,
-            skills, githubusername, bio, displaySocialInputs,
+            skills, githubusername, bio, displaySocialInputs, twitter, facebook,
+            linkedin, youtube, instagram,
         } = this.state;
 
         let socialInputs;
@@ -92,7 +95,7 @@ class CreateProfile extends Component {
                         placeholder="Twitter Profile URL"
                         name="twitter"
                         icon={['fab', 'twitter']}
-                        value={this.state.twitter}
+                        value={twitter}
                         onChange={this.onChange}
                         error={errors.twitter}
                     />
@@ -101,7 +104,7 @@ class CreateProfile extends Component {
                         placeholder="Facebook Page URL"
                         name="facebook"
                         icon={['fab', 'facebook']}
-                        value={this.state.facebook}
+                        value={facebook}
                         onChange={this.onChange}
                         error={errors.facebook}
                     />
@@ -110,7 +113,7 @@ class CreateProfile extends Component {
                         placeholder="Linkedin Profile URL"
                         name="linkedin"
                         icon={['fab', 'linkedin']}
-                        value={this.state.linkedin}
+                        value={linkedin}
                         onChange={this.onChange}
                         error={errors.linkedin}
                     />
@@ -119,7 +122,7 @@ class CreateProfile extends Component {
                         placeholder="YouTube Channel URL"
                         name="youtube"
                         icon={['fab', 'youtube']}
-                        value={this.state.youtube}
+                        value={youtube}
                         onChange={this.onChange}
                         error={errors.youtube}
                     />
@@ -128,7 +131,7 @@ class CreateProfile extends Component {
                         placeholder="Instagram Page URL"
                         name="instagram"
                         icon={['fab', 'instagram']}
-                        value={this.state.instagram}
+                        value={instagram}
                         onChange={this.onChange}
                         error={errors.instagram}
                     />
@@ -279,12 +282,14 @@ const mapStateToProps = state => ({
     err: state.err,
 });
 
+const mapActionsToProps = dispatch => bindActionCreators({
+    onCreateProfile: createProfile,
+}, dispatch);
+
 CreateProfile.propTypes = {
-    // err: PropTypes.instanceOf(Object).isRequired,
+    err: PropTypes.instanceOf(Object).isRequired,
     history: PropTypes.instanceOf(Object).isRequired,
-    createProfile: PropTypes.func.isRequired,
+    onCreateProfile: PropTypes.func.isRequired,
 };
 
-export default connect(mapStateToProps, {
-    createProfile,
-})(withRouter(CreateProfile));
+export default connect(mapStateToProps, mapActionsToProps)(withRouter(CreateProfile));

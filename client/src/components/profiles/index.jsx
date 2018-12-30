@@ -1,25 +1,31 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Spinner from '../common/Spinner';
 import { getProfiles } from '../../actions/profileActions';
 import ProfileItem from './profile-item';
 
-/* eslint react/destructuring-assignment: */
 /* eslint no-underscore-dangle: */
 class Profiles extends Component {
     componentDidMount() {
-        this.props.getProfiles();
+        this.onGetProfiles();
+    }
+
+    onGetProfiles() {
+        const { onGetProfiles } = this.props;
+        onGetProfiles();
     }
 
     render() {
-        const { profiles, loading } = this.props.profile;
+        const { profile } = this.props;
+        const { profiles, loading } = profile;
         let profileItems;
         if (profiles === null || loading) {
             profileItems = <Spinner />;
         } else if (profiles.length > 0) {
-            profileItems = profiles.map(profile => (
-                <ProfileItem key={profile._id} profile={profile} />
+            profileItems = profiles.map(prof => (
+                <ProfileItem key={prof._id} profile={prof} />
             ));
         } else if (profiles.length === 0) {
             profileItems = <h4>No profiles found...</h4>;
@@ -49,11 +55,13 @@ const mapStateToProps = state => ({
     profile: state.profile,
 });
 
+const mapActionsToProps = dispatch => bindActionCreators({
+    onGetProfiles: getProfiles,
+}, dispatch);
+
 Profiles.propTypes = {
-    getProfiles: PropTypes.func.isRequired,
+    onGetProfiles: PropTypes.func.isRequired,
     profile: PropTypes.instanceOf(Object).isRequired,
 };
 
-export default connect(mapStateToProps, {
-    getProfiles,
-})(Profiles);
+export default connect(mapStateToProps, mapActionsToProps)(Profiles);

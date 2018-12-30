@@ -6,7 +6,7 @@ import {
 } from '../actions/types';
 
 const defaultState = {
-    profile: null,
+    devProfile: null,
     profiles: null,
     loading: false,
 };
@@ -17,7 +17,7 @@ const profileReducer = (state = defaultState, action) => {
         case GET_PROFILE:
             return {
                 ...state,
-                profile: action.payload,
+                devProfile: action.payload,
                 loading: false,
             };
         case GET_PROFILES:
@@ -34,7 +34,7 @@ const profileReducer = (state = defaultState, action) => {
         case CLEAR_CURRENT_PROFILE:
             return {
                 ...state,
-                profile: null,
+                devProfile: null,
             };
         default:
             return state;

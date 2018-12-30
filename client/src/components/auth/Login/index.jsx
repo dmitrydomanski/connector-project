@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { loginUser } from '../../../actions/authActions';
 import TextFieldGroup from '../../common/TextFieldGroup';
 import isEmpty from '../../../validation/is-empty';
@@ -36,6 +37,11 @@ class Login extends Component {
         return null;
     }
 
+    onLogin = (userData) => {
+        const { onLogin } = this.props;
+        onLogin(userData);
+    }
+
     onChange = (e) => {
         const { name, value } = e.target;
         this.setState({
@@ -51,8 +57,7 @@ class Login extends Component {
             password,
         };
 
-        /* eslint react/destructuring-assignment: */
-        this.props.loginUser(userData);
+        this.onLogin(userData);
     }
 
     render() {
@@ -100,13 +105,14 @@ const mapStateToProps = state => ({
     err: state.err,
 });
 
+const mapActionsToProps = dispatch => bindActionCreators({
+    onLogin: loginUser,
+}, dispatch);
+
 Login.propTypes = {
-    loginUser: PropTypes.func.isRequired,
-    // err: PropTypes.instanceOf(Object).isRequired,
+    onLogin: PropTypes.func.isRequired,
     history: PropTypes.instanceOf(Object).isRequired,
     auth: PropTypes.instanceOf(Object).isRequired,
 };
 
-export default connect(mapStateToProps, {
-    loginUser,
-})(Login);
+export default connect(mapStateToProps, mapActionsToProps)(Login);

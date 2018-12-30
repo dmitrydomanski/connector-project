@@ -44,14 +44,14 @@ class EditProfile extends Component {
             });
         }
 
-        if (nextProps.profile.profile) {
-            const { profile } = nextProps.profile;
+        if (nextProps.profile.devProfile) {
+            const { devProfile } = nextProps.profile;
             let {
                 company, website, location, githubusername, bio,
                 twitter, facebook, linkedin, youtube, instagram, social,
-            } = profile;
+            } = devProfile;
 
-            const { handle, skills, status } = profile;
+            const { handle, skills, status } = devProfile;
 
             const skillsCSV = skills.join(',');
 

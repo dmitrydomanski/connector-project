@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
 import ProfileHeader from './sections/profile-header';
 import ProfileAbout from './sections/profile-about';
 import ProfileCreds from './sections/profile-creds';
@@ -9,7 +10,6 @@ import ProfileGitHub from './sections/profile-github';
 import Spinner from '../common/Spinner';
 import { getProfileByHandle } from '../../actions/profileActions';
 
-/* eslint react/destructuring-assignment: */
 class Profile extends Component {
     constructor() {
         super();
@@ -20,7 +20,7 @@ class Profile extends Component {
     componentDidMount() {
         const { match } = this.props;
         if (match.params.handle) {
-            this.props.getProfileByHandle(match.params.handle);
+            this.onGetProfileByHandle(match.params.handle);
         }
     }
 
@@ -32,11 +32,17 @@ class Profile extends Component {
         return null;
     }
 
+    onGetProfileByHandle = (handle) => {
+        const { onGetProfileByHandle } = this.props;
+        onGetProfileByHandle(handle);
+    }
+
     render() {
-        const { profile } = this.props.profile;
+        const { profile } = this.props;
+        const { devProfile } = profile;
         let profileContent;
 
-        if (profile === null) {
+        if (devProfile === null) {
             profileContent = <Spinner />;
         } else {
             profileContent = (
@@ -48,16 +54,18 @@ class Profile extends Component {
                             </Link>
                         </div>
                     </div>
-                    <ProfileHeader profile={profile} />
-                    <ProfileAbout profile={profile} />
-                    <ProfileCreds education={profile.education} experience={profile.experience} />
-                    {profile.githubusername
-                        ? (<ProfileGitHub username={profile.githubusername} />)
+                    <ProfileHeader profile={devProfile} />
+                    <ProfileAbout profile={devProfile} />
+                    <ProfileCreds
+                        education={devProfile.education}
+                        experience={devProfile.experience}
+                    />
+                    {devProfile.githubusername
+                        ? (<ProfileGitHub username={devProfile.githubusername} />)
                         : null}
                 </div>
             );
         }
-
         return (
             <div className="profile">
                 <div className="container">
@@ -77,13 +85,14 @@ const mapStateToProps = state => ({
     profile: state.profile,
 });
 
+const mapActionsToProps = dispatch => bindActionCreators({
+    onGetProfileByHandle: getProfileByHandle,
+}, dispatch);
+
 Profile.propTypes = {
     profile: PropTypes.instanceOf(Object).isRequired,
     match: PropTypes.instanceOf(Object).isRequired,
-    // history: PropTypes.instanceOf(Object).isRequired,
-    getProfileByHandle: PropTypes.func.isRequired,
+    onGetProfileByHandle: PropTypes.func.isRequired,
 };
 
-export default connect(mapStateToProps, {
-    getProfileByHandle,
-})(Profile);
+export default connect(mapStateToProps, mapActionsToProps)(Profile);
